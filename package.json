@@ -1,0 +1,33 @@
+{
+  "name": "clock-svg-generator",
+  "version": "0.0.1",
+  "description": "Generates the SVG of a clock. Or include the React component directly. Uses current time by default.",
+  "main": "index.js",
+  "scripts": {
+    "test": "jest",
+    "build": "rollup -c"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/jahredhope/clock-svg-generator.git"
+  },
+  "keywords": [
+    "SVG",
+    "Clock",
+    "React"
+  ],
+  "author": "Jahred Hope <jahredhope@gmail.com>",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/jahredhope/clock-svg-generator/issues"
+  },
+  "homepage": "https://github.com/jahredhope/clock-svg-generator#readme",
+  "dependencies": {
+    "babel-preset-react": "^6.16.0",
+    "eslint": "^3.11.1",
+    "react": "^15.4.1",
+    "react-dom": "^15.4.1",
+    "rollup": "^0.36.4",
+    "rollup-plugin-babel": "^2.6.1"
+  }
+}

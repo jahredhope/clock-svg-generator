@@ -36,17 +36,16 @@ class Clock extends React.Component {
   }
   render() {
     const {
-      outerGutter = 10,
-      clockIconGutter = 100,
-      iconSize = 10,
+      outerGutter = 3,
+      iconSize = 3,
       indictatorCount = 12,
       indicatorDistance = 0.8,
-      strokeWidth = 4,
+      strokeWidth = 1,
       hideSeconds = false,
       useNumbers = true,
       showCircle = true,
-      viewBoxHeight = 314,
-      viewBoxWidth = 314
+      viewBoxHeight = 100,
+      viewBoxWidth = 100
     } = this.props
 
     let { hours, minutes, seconds } = this.isControlled() ? this.props : this.state
@@ -73,7 +72,7 @@ class Clock extends React.Component {
     const hoursX = Math.round((Math.cos(hoursInRadians) * radius) / 2 + middleX)
     const hoursY = Math.round((Math.sin(hoursInRadians) * radius) / 2 + middleY)
 
-    const minutesInRadians = ((minutes / 60) - (1 / 4)) * 2 * Math.PI
+    const minutesInRadians = (((minutes + (seconds%60/60)) / 60) - (1 / 4)) * 2 * Math.PI
     const minutesX = Math.round((Math.cos(minutesInRadians) * radius) / 1.3 + middleX)
     const minutesY = Math.round((Math.sin(minutesInRadians) * radius) / 1.3 + middleY)
 

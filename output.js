@@ -36,17 +36,16 @@ class Clock extends React.Component {
   }
   render() {
     const {
-      outerGutter = 10,
-      clockIconGutter = 100,
-      iconSize = 10,
+      outerGutter = 3,
+      iconSize = 3,
       indictatorCount = 12,
       indicatorDistance = 0.8,
-      strokeWidth = 4,
+      strokeWidth = 1,
       hideSeconds = false,
       useNumbers = true,
       showCircle = true,
-      viewBoxHeight = 314,
-      viewBoxWidth = 314
+      viewBoxHeight = 100,
+      viewBoxWidth = 100
     } = this.props;
 
     let { hours, minutes, seconds } = this.isControlled() ? this.props : this.state;
@@ -70,7 +69,7 @@ class Clock extends React.Component {
     const hoursX = Math.round(Math.cos(hoursInRadians) * radius / 2 + middleX);
     const hoursY = Math.round(Math.sin(hoursInRadians) * radius / 2 + middleY);
 
-    const minutesInRadians = (minutes / 60 - 1 / 4) * 2 * Math.PI;
+    const minutesInRadians = ((minutes + seconds % 60 / 60) / 60 - 1 / 4) * 2 * Math.PI;
     const minutesX = Math.round(Math.cos(minutesInRadians) * radius / 1.3 + middleX);
     const minutesY = Math.round(Math.sin(minutesInRadians) * radius / 1.3 + middleY);
 
@@ -122,6 +121,9 @@ Clock.propTypes = {
 
 var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
 
+const tickInterval = 20;
+const spinSpeed = 250;
+
 class ClockApp extends React.Component {
   constructor(props) {
     super(props);
@@ -129,27 +131,42 @@ class ClockApp extends React.Component {
       hours: undefined,
       minutes: undefined,
       seconds: undefined,
-      outerGutter: 3,
+      outerGutter: 30,
       indicatorDistance: 0.8,
       indictatorCount: 4,
-      strokeWidth: 4,
-      radius: 50,
-      iconSize: 10,
+      strokeWidth: 10,
+      iconSize: 30,
       useNumbers: true,
       showCircle: true,
       hideSeconds: false,
-      viewBoxHeight: 314,
-      viewBoxWidth: 314
+      viewBoxHeight: 1000,
+      viewBoxWidth: 1000
 
     };
   }
-  render() {
-    console.log('RENDER', 'ClockApp', this.state);
+  stopSpin() {
+    if (this.spinTimer) {
+      clearInterval(this.spinTimer);
+      this.spinTimer = null;
+    }
+  }
+  startSpin() {
+    this.stopSpin();
+    this.state.hours = typeof this.state.hours === 'number' ? this.state.hours : 0;
+    this.state.minutes = typeof this.state.minutes === 'number' ? this.state.minutes : 0;
+    this.state.seconds = typeof this.state.seconds === 'number' ? this.state.seconds : 0;
 
-    const field = field => {
+    this.spinTimer = setInterval(() => {
+      const newTime = this.state.hours * 3600 + this.state.minutes * 60 + this.state.seconds + spinSpeed * (tickInterval / 1000);
+      this.setState({ hours: Math.floor(newTime / 3600 % 60), minutes: Math.floor(newTime / 60 % 60), seconds: Math.floor(newTime % 60) });
+    }, tickInterval);
+  }
+
+  render() {
+    const field = (field, index) => {
       return React.createElement(
         'div',
-        null,
+        { key: index },
         React.createElement(
           'label',
           null,
@@ -157,7 +174,7 @@ class ClockApp extends React.Component {
         ),
         typeof this.state[field] === 'boolean' ? React.createElement('input', { type: 'checkbox', checked: this.state[field], onChange: event => {
             this.setState({ [field]: event.target.checked });
-          } }) : React.createElement('input', { type: 'text', value: this.state[field], onChange: event => {
+          } }) : React.createElement('input', { type: 'number', value: this.state[field], onChange: event => {
             this.setState({
               [field]: !isNaN(parseFloat(event.target.value)) ? parseFloat(event.target.value) : undefined
             });
@@ -165,20 +182,39 @@ class ClockApp extends React.Component {
       );
     };
     return React.createElement(
-      'div',
-      { style: { maxWidth: 800 } },
-      React.createElement(Clock, _extends({}, this.state, { style: { maxWidth: 400, color: 'black' } })),
-      React.createElement('br', null),
-      Object.keys(this.state).map(field),
-      React.createElement('br', null),
+      'section',
+      null,
       React.createElement(
-        'label',
+        'div',
+        { className: 'horizontalFlex' },
+        React.createElement(
+          'div',
+          null,
+          React.createElement(Clock, _extends({}, this.state, { className: 'clock' })),
+          React.createElement(
+            'button',
+            { onClick: () => this.spinTimer ? this.stopSpin() : this.startSpin() },
+            'SPIN'
+          )
+        ),
+        React.createElement(
+          'div',
+          null,
+          React.createElement(
+            'div',
+            { id: 'options' },
+            Object.keys(this.state).map(field)
+          )
+        )
+      ),
+      React.createElement(
+        'h2',
         null,
         'Generated SVG'
       ),
       React.createElement(
         'div',
-        null,
+        { id: 'staticMarkup' },
         ReactDOMServer.renderToStaticMarkup(React.createElement(Clock, this.state))
       )
     );
